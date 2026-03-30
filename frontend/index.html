@@ -3,20 +3,91 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Real-Time Object Detection</title>
+    <title>Blind Assistance System</title>
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<h1>Real-Time Object Detection</h1>
-
-<div class="container">
-    <video id="camera" autoplay></video>
+<!-- HOME VIEW -->
+<div id="home-view" class="view">
+    <h1>🎯 Blind Assistance System</h1>
+    <p class="subtitle">AI-Powered Object Detection with Voice Guidance</p>
+    
+    <div class="home-buttons">
+        <button id="btn-live-mode" class="primary-btn">
+            <span class="btn-icon">📹</span>
+            <span class="btn-text">Live Detection</span>
+        </button>
+        <button id="btn-capture-mode" class="primary-btn">
+            <span class="btn-icon">📷</span>
+            <span class="btn-text">Capture Mode</span>
+        </button>
+    </div>
 </div>
 
-<button id="capture">Capture & Detect</button>
+<!-- LIVE DETECTION VIEW -->
+<div id="live-view" class="view hidden">
+    <h1>📹 Live Detection Mode</h1>
+    
+    <div class="controls">
+        <label class="language-picker" for="language-select-live">Language</label>
+        <select id="language-select-live" class="language-select">
+            <option value="en">English</option>
+            <option value="hi">Hindi</option>
+            <option value="te">Telugu</option>
+        </select>
+        <button id="btn-start-detection" class="success-btn">Start Detection</button>
+        <button id="btn-stop-detection" class="danger-btn" disabled>Stop Detection</button>
+        <button id="btn-back-from-live" class="secondary-btn">← Back</button>
+    </div>
 
-<div id="result"></div>
+    <div class="video-container">
+        <video id="camera" autoplay></video>
+    </div>
+
+    <div id="live-result" class="result"></div>
+</div>
+
+<!-- CAPTURE MODE VIEW -->
+<div id="capture-view" class="view hidden">
+    <h1>📷 Capture Mode</h1>
+    <div class="controls">
+        <label class="language-picker" for="language-select-capture">Language</label>
+        <select id="language-select-capture" class="language-select">
+            <option value="en">English</option>
+            <option value="hi">Hindi</option>
+            <option value="te">Telugu</option>
+        </select>
+    </div>
+    
+    <div class="capture-options">
+        <button id="btn-upload-photo" class="option-btn">
+            <span class="btn-icon">📁</span>
+            <span class="btn-text">Upload Photo</span>
+        </button>
+        <button id="btn-capture-photo" class="option-btn">
+            <span class="btn-icon">📸</span>
+            <span class="btn-text">Capture Photo</span>
+        </button>
+        <button id="btn-capture-video" class="option-btn">
+            <span class="btn-icon">🎥</span>
+            <span class="btn-text">Capture Video (30s)</span>
+        </button>
+    </div>
+    
+    <button id="btn-stop-recording" class="stop-recording-btn hidden">⏹️ Stop Recording</button>
+    
+    <button id="btn-back-from-capture" class="secondary-btn back-btn">← Back to Home</button>
+
+    <input type="file" id="upload-input" accept="image/*" style="display:none" />
+
+    <div class="video-container hidden" id="capture-video-container">
+        <video id="capture-camera" autoplay></video>
+        <div id="timer-display" class="timer-display hidden">30</div>
+    </div>
+
+    <div id="capture-result" class="result"></div>
+</div>
 
 <script src="script.js"></script>
 </body>

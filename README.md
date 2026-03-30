@@ -146,6 +146,20 @@ Additional help
 - Want me to add `.gitignore` and remove uploads from repo history? Say: "clean repo uploads"
 - Want voice enabled and tested? Say: "enable voice" and I will run the pywin32 postinstall and restart the server.
 
+Blind Navigation Assistant (real-time)
+- A standalone advanced assistive script is available at `backend/blind_navigation_assistant.py`.
+- Features include frame zoning (left/center/right), distance estimation in meters, static vs moving object classification, multilingual guidance (`en`, `hi`, `te`), smart speech cooldown, and visual overlays.
+
+Run (PowerShell):
+
+```powershell
+python backend\blind_navigation_assistant.py --model yolov8n.pt --language en --conf 0.35 --frame-skip 1
+```
+
+Controls:
+- Press `1` for English, `2` for Hindi, `3` for Telugu, `q` to quit.
+- If webcam index 0 fails, try `--camera 1`.
+
 License & attribution
 - This repo contains your trained model `best.pt`. Keep licensing and distribution of that model in mind.
 

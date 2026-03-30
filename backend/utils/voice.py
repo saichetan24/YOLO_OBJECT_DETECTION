@@ -1,6 +1,7 @@
 import threading
 import queue
 import logging
+import time
 
 
 # Lazily initialized voice worker. We avoid initializing pyttsx3 at import time
@@ -62,12 +63,52 @@ class _VoiceWorker:
 # Singleton instance used by the app; created lazily below
 _VOICE = None
 
+# Track last spoken objects to avoid repetition
+_last_spoken_set = set()
+_last_spoken_text = ""
+_last_spoken_time = 0.0
 
-def speak_items(items):
-    """Speak a list of items (non-blocking)."""
-    global _VOICE
+
+def _format_sentence(items):
+    """Convert a list of items into a natural sentence.
+    
+    Examples:
+        ["person"] -> "Detected object is person"
+        ["person", "chair"] -> "Detected objects are person and chair"
+        ["person", "chair", "bottle"] -> "Detected objects are person, chair and bottle"
+    """
+    if not items:
+        return ""
+    
+    if len(items) == 1:
+        return f"Detected object is {items[0]}"
+    elif len(items) == 2:
+        return f"Detected objects are {items[0]} and {items[1]}"
+    else:
+        # Join all except last with commas, then add "and" before last item
+        all_but_last = ", ".join(items[:-1])
+        return f"Detected objects are {all_but_last} and {items[-1]}"
+
+
+def speak_items(items, avoid_repetition=False):
+    """Speak a list of items as a natural sentence (non-blocking).
+    
+    Args:
+        items: List of item names to speak
+        avoid_repetition: If True, only speak if the set of items has changed
+    """
+    global _VOICE, _last_spoken_set
+    
     if not items:
         return
+    
+    # Check if we should skip due to repetition
+    if avoid_repetition:
+        current_set = set(items)
+        if current_set == _last_spoken_set:
+            return  # Same objects as last time, skip
+        _last_spoken_set = current_set
+    
     if _VOICE is None:
         try:
             _VOICE = _VoiceWorker()
@@ -75,8 +116,33 @@ def speak_items(items):
             logging.exception("Failed to create VoiceWorker; voice disabled")
             return
 
-    if isinstance(items, (list, tuple)):
-        text = ", ".join(map(str, items))
-    else:
-        text = str(items)
+    # Format the sentence naturally
+    text = _format_sentence(items)
+    logging.info(f"Voice output: {text}")
+    _VOICE.speak(text)
+
+
+def speak_text(text, avoid_repetition=True, cooldown_sec=2.5):
+    """Speak a raw text message (non-blocking) with smart repetition control."""
+    global _VOICE, _last_spoken_text, _last_spoken_time
+
+    if not text:
+        return
+
+    now = time.time()
+    if avoid_repetition:
+        if text == _last_spoken_text and (now - _last_spoken_time) < cooldown_sec:
+            return
+
+    _last_spoken_text = text
+    _last_spoken_time = now
+
+    if _VOICE is None:
+        try:
+            _VOICE = _VoiceWorker()
+        except Exception:
+            logging.exception("Failed to create VoiceWorker; voice disabled")
+            return
+
+    logging.info(f"Voice output: {text}")
     _VOICE.speak(text)
