@@ -164,4 +164,6 @@ License & attribution
 - This repo contains your trained model `best.pt`. Keep licensing and distribution of that model in mind.
 
 ---
-Updated: December 13, 2025
+command to run this file in the pc 
+d:/RealTime_Object_Detection/.venv/Scripts/python.exe backend/app.py
+Updated: 30-March-2026
